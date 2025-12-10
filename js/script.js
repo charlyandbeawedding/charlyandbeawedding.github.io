@@ -30,6 +30,23 @@ function updateCountdown() {
 updateCountdown();
 timer = setInterval(updateCountdown, 1000);
 
+// Hamburger Menu logic (Run once)
+const hamburger = document.querySelector('.hamburger');
+const navLinks = document.querySelector('.nav-links');
+
+if (hamburger) {
+    hamburger.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+    });
+
+    // Close menu when a link is clicked
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', () => {
+            navLinks.classList.remove('active');
+        });
+    });
+}
+
 // Navbar Scroll Effect
 window.addEventListener('scroll', function () {
     const navbar = document.getElementById('navbar');
@@ -41,6 +58,7 @@ window.addEventListener('scroll', function () {
         navbar.style.background = 'rgba(255, 255, 255, 0.95)';
         navbar.style.boxShadow = '0 2px 10px rgba(0,0,0,0.05)';
         navbar.style.padding = '1.5rem 0';
+
     }
 });
 
@@ -114,14 +132,34 @@ if (storySlides.length > 0) {
 // Placeholder files. User will add real files to /musica folder.
 const playlist = [
     { title: "Killing In The Name", artist: "Rage Against The Machine", file: "musica/Killing In The Name.mp3" },
-    { title: "Perfect", artist: "Ed Sheeran", file: "musica/song1.mp3" }, // Keep placeholders as secondary
-    { title: "All of Me", artist: "John Legend", file: "musica/song2.mp3" }
+    { title: "Toro", artist: "El Cuolumpio Asesino", file: "musica/Toro.mp3" },
+    { title: "Midnight City", artist: "M83", file: "musica/Midnight City.mp3" },
+    { title: "Take Me Out", artist: "Franz Ferdinand", file: "musica/Take Me Out.mp3" },
+    { title: "Fire", artist: "Kasabian", file: "musica/Fire.mp3" },
+    { title: "Fuego", artist: "Bomba Estéreo", file: "musica/Fuego.mp3" },
+    { title: "I Love London", artist: "Crystal Fighters", file: "musica/I Love London.mp3" },
+    { title: "La Tormenta de Arena", artist: "Dorian", file: "musica/La Tormenta de Arena.mp3" },
+    { title: "D.A.N.C.E", artist: "Justice", file: "musica/DANCE.mp3" },
+    { title: "Are You Gonna Be My Girl", artist: "Jet", file: "musica/Are You Gonna Be My Girl.mp3" },
+    { title: "Young Blood", artist: "The Naked and Famous", file: "musica/TYoung Blood.mp3" },
+    { title: "Club de Fans de John Boy", artist: "Love of Lesbian", file: "musica/Club de Fans de John Boy.mp3" },
+    { title: "Do I Wanna Know?", artist: "Artic Monkeys", file: "musica/Do I Wanna Know?.mp3" },
+    { title: "Seven Nation Army", artist: "The White Stripes", file: "musica/Seven Nation Army.mp3" },
+    { title: "Kids", artist: "MGMT", file: "musica/Kids.mp3" },
+    { title: "Crystalised", artist: "The xx", file: "musica/Crystalised.mp3" },
+    { title: "Valiente", artist: "Vetusta Morla", file: "musica/Valiente.mp3" },
+    { title: "Cherub Rock", artist: "The Smashing Pumpkins", file: "musica/Cherub Rock.mp3" },
+    { title: "Baby´s On Fire", artist: "Die Antwoord", file: "musica/Baby´s On Fire.mp3" }
 ];
 
-let currentSongIndex = 0;
+// Initialize with a random song
+let currentSongIndex = Math.floor(Math.random() * playlist.length);
 let isPlaying = false;
 
 const playBtn = document.getElementById('play-btn');
+const iconPlay = document.getElementById('icon-play');
+const iconPause = document.getElementById('icon-pause');
+
 const prevBtn = document.getElementById('prev-btn');
 const nextBtn = document.getElementById('next-btn');
 const playlistBtn = document.getElementById('playlist-btn');
@@ -133,6 +171,15 @@ const progressContainer = document.getElementById('progress-container');
 const playlistContainer = document.getElementById('playlist-container');
 const playlistList = document.getElementById('playlist-list');
 const audio = document.getElementById('audio-element');
+const playerContainer = document.getElementById('music-player');
+const toggleBtn = document.getElementById('player-toggle');
+
+// Toggle Player Collapse
+if (toggleBtn && playerContainer) {
+    toggleBtn.addEventListener('click', () => {
+        playerContainer.classList.toggle('collapsed');
+    });
+}
 
 // Initialize Playlist UI
 function initPlaylist() {
@@ -178,7 +225,12 @@ function togglePlay() {
 
 function playMusic() {
     isPlaying = true;
-    playBtn.innerText = "⏸";
+    if (iconPlay && iconPause) {
+        iconPlay.style.display = 'none';
+        iconPause.style.display = 'block';
+    }
+    // Removed innerText fallback to protect SVGs
+
     playerCd.classList.add('spinning');
 
     // Play audio
@@ -189,7 +241,10 @@ function playMusic() {
         }).catch(error => {
             console.log("Auto-play was prevented");
             isPlaying = false;
-            playBtn.innerText = "▶";
+            if (iconPlay && iconPause) {
+                iconPlay.style.display = 'block';
+                iconPause.style.display = 'none';
+            }
             playerCd.classList.remove('spinning');
         });
     }
@@ -197,7 +252,10 @@ function playMusic() {
 
 function pauseMusic() {
     isPlaying = false;
-    playBtn.innerText = "▶";
+    if (iconPlay && iconPause) {
+        iconPlay.style.display = 'block';
+        iconPause.style.display = 'none';
+    }
     playerCd.classList.remove('spinning');
     audio.pause();
 }
@@ -252,11 +310,51 @@ audio.addEventListener('timeupdate', updateProgress);
 audio.addEventListener('ended', nextSong);
 progressContainer.addEventListener('click', setProgress);
 
+// Auto-play Attempt
+window.addEventListener('load', () => {
+    // Attempt play
+    const startPromise = audio.play();
+    if (startPromise !== undefined) {
+        startPromise.then(() => {
+            // Auto-play started!
+            isPlaying = true;
+            if (iconPlay && iconPause) {
+                iconPlay.style.display = 'none';
+                iconPause.style.display = 'block';
+            }
+            playerCd.classList.add('spinning');
+        }).catch(error => {
+            // Auto-play blocked
+            console.log("Autoplay blocked. Waiting for interaction.");
+            // Add one-time listener to document
+            const enableAudio = () => {
+                playMusic();
+                document.removeEventListener('click', enableAudio);
+                document.removeEventListener('touchstart', enableAudio);
+                document.removeEventListener('keydown', enableAudio);
+            };
+            document.addEventListener('click', enableAudio);
+            document.addEventListener('touchstart', enableAudio);
+            document.addEventListener('keydown', enableAudio);
+        });
+    }
+});
+
 // AJAX Form Submission
 const rsvpForm = document.querySelector('.rsvp-form');
 if (rsvpForm) {
     rsvpForm.addEventListener('submit', function (e) {
         e.preventDefault();
+
+        // VALDATION: Check for Email OR Phone
+        const email = document.getElementById('email').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+
+        if (!email && !phone) {
+            alert('Por favor, introduce al menos un método de contacto (Email o Teléfono) para poder confirmar.');
+            return;
+        }
+
         const form = e.target;
         const data = new FormData(form);
         const action = form.action;
@@ -493,7 +591,13 @@ if (canvas) {
 
     // Input Handling
     function handleInput(e) {
+        // Prevent game actions if user is typing in a form
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+            return;
+        }
+
         if ((e.code === 'Space' || e.code === 'ArrowUp' || e.type === 'touchstart' || e.type === 'click')) {
+            // Prevent scrolling only if game action is taken
             if (e.code === 'Space' || e.code === 'ArrowUp') e.preventDefault();
 
             if (!gamePlaying) {
