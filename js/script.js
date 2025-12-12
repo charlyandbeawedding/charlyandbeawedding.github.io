@@ -139,17 +139,17 @@ const playlist = [
     { title: "Fuego", artist: "Bomba Estéreo", file: "musica/Fuego.mp3" },
     { title: "I Love London", artist: "Crystal Fighters", file: "musica/I Love London.mp3" },
     { title: "La Tormenta de Arena", artist: "Dorian", file: "musica/La Tormenta de Arena.mp3" },
-    { title: "D.A.N.C.E", artist: "Justice", file: "musica/DANCE.mp3" },
+    { title: "D.A.N.C.E", artist: "Justice", file: "musica/D.A.N.C.E.mp3" },
     { title: "Are You Gonna Be My Girl", artist: "Jet", file: "musica/Are You Gonna Be My Girl.mp3" },
-    { title: "Young Blood", artist: "The Naked and Famous", file: "musica/TYoung Blood.mp3" },
-    { title: "Club de Fans de John Boy", artist: "Love of Lesbian", file: "musica/Club de Fans de John Boy.mp3" },
-    { title: "Do I Wanna Know?", artist: "Artic Monkeys", file: "musica/Do I Wanna Know?.mp3" },
+    { title: "Young Blood", artist: "The Naked and Famous", file: "musica/Young Blood.mp3" },
+    { title: "Club de Fans de John Boy", artist: "Love of Lesbian", file: "musica/Club de fans de John Boy.mp3" },
+    { title: "Do I Wanna Know?", artist: "Artic Monkeys", file: "musica/Do I Wanna Know.mp3" },
     { title: "Seven Nation Army", artist: "The White Stripes", file: "musica/Seven Nation Army.mp3" },
     { title: "Kids", artist: "MGMT", file: "musica/Kids.mp3" },
     { title: "Crystalised", artist: "The xx", file: "musica/Crystalised.mp3" },
     { title: "Valiente", artist: "Vetusta Morla", file: "musica/Valiente.mp3" },
     { title: "Cherub Rock", artist: "The Smashing Pumpkins", file: "musica/Cherub Rock.mp3" },
-    { title: "Baby´s On Fire", artist: "Die Antwoord", file: "musica/Baby´s On Fire.mp3" }
+    { title: "Baby´s on Fire", artist: "Die Antwoord", file: "musica/Babys on Fire.mp3" }
 ];
 
 // Initialize with a random song
