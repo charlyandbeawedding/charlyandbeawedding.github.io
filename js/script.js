@@ -310,6 +310,10 @@ audio.addEventListener('timeupdate', updateProgress);
 audio.addEventListener('ended', nextSong);
 progressContainer.addEventListener('click', setProgress);
 
+// Initialize Player content
+initPlaylist();
+loadSong(currentSongIndex);
+
 // Auto-play Attempt
 window.addEventListener('load', () => {
     // Attempt play
