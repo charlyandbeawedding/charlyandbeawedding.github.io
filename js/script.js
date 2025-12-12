@@ -314,7 +314,7 @@ progressContainer.addEventListener('click', setProgress);
 initPlaylist();
 loadSong(currentSongIndex);
 
-// Auto-play Attempt
+// Auto-play Attempt (Best Effort)
 window.addEventListener('load', () => {
     // Attempt play
     const startPromise = audio.play();
@@ -330,7 +330,7 @@ window.addEventListener('load', () => {
         }).catch(error => {
             // Auto-play blocked
             console.log("Autoplay blocked. Waiting for interaction.");
-            // Add one-time listener to document
+            // Add one-time listener to document to start music on first click/tap
             const enableAudio = () => {
                 playMusic();
                 document.removeEventListener('click', enableAudio);
@@ -441,8 +441,8 @@ if (canvas) {
         width: 40,
         height: 40,
         dy: 0,
-        jumpPower: -10,
-        gravity: 0.6,
+        jumpPower: -15, // Higher jump (Mario style)
+        gravity: 0.8,   // Stronger gravity (Heavy feel)
         grounded: true,
         jump: function () {
             if (this.grounded) {
@@ -476,6 +476,8 @@ if (canvas) {
 
     // Obstacle Array (Rings)
     const obstacles = [];
+    let obstacleTimer = 0;
+    let nextObstacleTime = 0;
 
     class Obstacle {
         constructor() {
@@ -502,11 +504,59 @@ if (canvas) {
         }
     }
 
+    // Cloud Array (Background)
+    const clouds = [];
+
+    class Cloud {
+        constructor() {
+            this.x = canvas.width;
+            this.y = 10 + Math.random() * 80; // Sky area
+            this.width = 50; // Base width
+            this.height = 20;
+            this.speed = gameSpeed * 0.3; // Parallax effect (slower)
+            this.markedForDeletion = false;
+        }
+
+        update() {
+            this.x -= this.speed;
+            if (this.x + this.width < 0) this.markedForDeletion = true;
+            this.draw();
+        }
+
+        draw() {
+            // Draw pixel art cloud using rectangles
+            ctx.fillStyle = 'rgba(255,255,255,0.8)';
+
+            // Layout:  _
+            //        _| |_
+            //       |_____|
+
+            // Bottom main block
+            ctx.fillRect(this.x, this.y + 10, 50, 15);
+            // Middle bump
+            ctx.fillRect(this.x + 10, this.y, 30, 15);
+            // Top bump
+            ctx.fillRect(this.x + 20, this.y - 8, 15, 8);
+        }
+    }
+
     function spawnObstacle() {
-        if (frames % 120 === 0) { // Slightly slower spawn for new items
-            if (Math.random() > 0.5) {
-                obstacles.push(new Obstacle());
-            }
+        obstacleTimer++;
+        if (obstacleTimer > nextObstacleTime) {
+            obstacles.push(new Obstacle());
+            obstacleTimer = 0;
+            // More randomness in spacing (Variety)
+            const minDistance = 220; // slightly more minimum breathing room
+            const randomAdd = Math.random() * 300; // Much wider variance (was 150)
+            const distance = minDistance + randomAdd;
+
+            nextObstacleTime = distance / gameSpeed;
+        }
+    }
+
+    function spawnCloud() {
+        if (frames % 100 === 0 && Math.random() > 0.5) {
+            clouds.push(new Cloud());
         }
     }
 
@@ -514,8 +564,11 @@ if (canvas) {
         gamePlaying = true;
         score = 0;
         frames = 0;
-        gameSpeed = 5;
-        obstacles.length = 0; // Clear obstacles
+        gameSpeed = 2.5; // Start Even Slower (was 3.5)
+        obstacles.length = 0;
+        clouds.length = 0;
+        obstacleTimer = 0;
+        nextObstacleTime = 50;
         instructionElement.style.display = 'none';
         animate();
     }
@@ -523,6 +576,14 @@ if (canvas) {
     function animate() {
         animationId = requestAnimationFrame(animate);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Spawn Background Elements
+        spawnCloud();
+
+        // Update & Draw Clouds (Background Layer)
+        clouds.forEach((cloud) => {
+            cloud.update();
+        });
 
         // Draw Ground Line
         ctx.fillStyle = 'rgba(255,255,255,0.5)';
@@ -537,11 +598,11 @@ if (canvas) {
             obstacle.update();
 
             // Collision Detection (Box)
-            // Shrink hitboxes slightly for forgiveness
-            const hitX = dino.x + 5;
-            const hitY = dino.y + 5;
-            const hitW = dino.width - 10;
-            const hitH = dino.height - 10;
+            // Shrink hitboxes MORE for forgiveness (Visual match)
+            const hitX = dino.x + 12; // +12px indent left
+            const hitY = dino.y + 10; // +10px indent top
+            const hitW = dino.width - 24; // Narrower width
+            const hitH = dino.height - 15; // Shorter height
 
             if (
                 hitX < obstacle.x + obstacle.width &&
@@ -580,6 +641,12 @@ if (canvas) {
             }
         }
 
+        for (let i = clouds.length - 1; i >= 0; i--) {
+            if (clouds[i].markedForDeletion) {
+                clouds.splice(i, 1);
+            }
+        }
+
         // Score Display
         ctx.fillStyle = 'white';
         ctx.font = '16px "Courier Prime"';
@@ -587,7 +654,8 @@ if (canvas) {
         ctx.fillText(`Puntuación: ${score}  |  Récord: ${highScore}`, 10, 20);
 
         frames++;
-        if (frames % 500 === 0) gameSpeed += 0.5;
+        // Increase speed gradually
+        if (frames % 500 === 0) gameSpeed += 0.2;
     }
 
     // Initial Draw
