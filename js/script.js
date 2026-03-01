@@ -82,6 +82,74 @@ function toggleBusOptions(checkbox) {
     }
 }
 
+// Toggle Allergies Options
+function toggleAllergies(checkbox, index) {
+    const optionsDiv = document.getElementById('allergies-options-' + index);
+    if (checkbox.checked) {
+        optionsDiv.style.display = 'block';
+    } else {
+        optionsDiv.style.display = 'none';
+        const input = optionsDiv.querySelector('input');
+        if (input) input.value = '';
+    }
+}
+
+// Sync primary name to the first guest
+function syncPrimaryName() {
+    const primaryNameInput = document.getElementById('primary-name');
+    const firstGuestNameInput = document.querySelector('input[name="guest_1_name"]');
+    if (primaryNameInput && firstGuestNameInput) {
+        firstGuestNameInput.value = primaryNameInput.value;
+    }
+}
+
+// Generate Guest Fields dynamically
+function generateGuestFields() {
+    const countSelect = document.getElementById('guest-count');
+    if (!countSelect) return;
+    const count = parseInt(countSelect.value) || 1;
+    const container = document.getElementById('guests-container');
+    if (!container) return;
+    container.innerHTML = '';
+
+    const primaryNameInput = document.getElementById('primary-name');
+    const primaryName = primaryNameInput ? primaryNameInput.value : '';
+
+    for (let i = 1; i <= count; i++) {
+        const defaultName = (i === 1) ? primaryName : '';
+        const guestHtml = `
+            <div class="guest-block" style="padding: 1.5rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; margin-bottom: 1rem; background: rgba(255,255,255,0.8); text-align: left;">
+                <h4 style="margin-top: 0; margin-bottom: 1rem; color: var(--color-primary); font-family: 'Special Elite', cursive;">Asistente ${i}</h4>
+                <input type="text" name="guest_${i}_name" placeholder="Nombre completo" value="${defaultName}" required style="margin-bottom: 1rem; width: 100%; border: none; border-bottom: 2px solid var(--color-primary); background: transparent; padding: 0.5rem; outline: none; font-family: inherit;">
+                
+                <select name="guest_${i}_menu" required style="margin-bottom: 1rem; width: 100%; border: none; border-bottom: 2px solid var(--color-primary); background: transparent; padding: 0.5rem; outline: none; font-family: inherit; cursor: pointer;">
+                    <option value="" disabled selected>Elección de menú</option>
+                    <option value="carne">Carne</option>
+                    <option value="pescado">Pescado</option>
+                    <option value="vegetariano">Vegetariano</option>
+                    <option value="vegano">Vegano</option>
+                </select>
+                
+                <div class="checkbox-wrapper" style="margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox" id="allergies_${i}" name="guest_${i}_has_allergies" onchange="toggleAllergies(this, ${i})" style="width: auto;">
+                    <label for="allergies_${i}" style="cursor: pointer; font-size: 0.9rem;">¿Alergias o intolerancias?</label>
+                </div>
+                <div id="allergies-options-${i}" style="display: none; margin-bottom: 0.5rem;">
+                    <input type="text" name="guest_${i}_allergies_info" placeholder="Indica cuáles (ej. Celíaco...)" style="width: 100%; border: none; border-bottom: 2px solid var(--color-primary); background: transparent; padding: 0.5rem; outline: none; font-family: inherit;">
+                </div>
+            </div>
+        `;
+        container.insertAdjacentHTML('beforeend', guestHtml);
+    }
+}
+
+// Initialize guest fields immediately
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', generateGuestFields);
+} else {
+    generateGuestFields();
+}
+
 // Story Carousel Logic
 const storySlides = document.querySelectorAll('.story-slide');
 const storyPrevBtn = document.getElementById('story-prev');

@@ -27,7 +27,6 @@
     </div>
 
     <!-- Navigation -->
-    <!-- Navigation -->
     <nav class="navbar" id="navbar">
         <div class="container nav-content">
             <div class="logo-container">
@@ -192,7 +191,8 @@
                 <div class="detail-card">
                     <h3>Celebración</h3>
                     <p class="detail-icon">💍</p>
-                    <p class="time">18:00 HRS</p>
+                    <p class="time">17:30 HRS (Apertura de puertas)</p>
+                    <p class="time">18:00 HRS (Ceremonia)</p>
                     <p class="location">Finca La Atlántida (O Grove)</p>
                     <a href="https://maps.google.com/?q=Finca+La+Atlántida+O+Grove" target="_blank" class="map-link">Ver
                         Mapa</a>
@@ -200,7 +200,7 @@
                 <div class="detail-card">
                     <h3>Autobuses</h3>
                     <p class="detail-icon">🚌</p>
-                    <p class="time">Ida: 17:00 HRS (Plaza de Galicia)</p>
+                    <p class="time">Ida: 16:45 HRS (Plaza de Galicia)</p>
                     <p class="location">Vuelta: 03:00* y 05:00 HRS</p>
                     <span class="map-link"><small>*3:00 AM sujeto a demanda</small></span>
                 </div>
@@ -233,24 +233,43 @@
                     <input type="hidden" name="_subject" value="Nueva Confirmación de Boda!">
                     <!-- <input type="hidden" name="_next" value="thanks.html"> -->
 
-                    <input type="text" name="name" placeholder="Nombre Completo" required autocomplete="name">
+                    <!-- Datos principales de contacto -->
+                    <div style="margin-bottom: 1rem;">
+                        <input type="text" id="primary-name" name="name" placeholder="Tu Nombre (Contacto Principal)"
+                            required autocomplete="name" style="margin-bottom: 1rem; width: 100%;"
+                            oninput="syncPrimaryName()">
 
-                    <!-- Contact Option: Email or Phone -->
-                    <div class="contact-inputs" style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                        <input type="email" name="email" id="email" placeholder="Email (Opcional)"
-                            style="flex: 1; min-width: 200px;">
-                        <input type="tel" name="phone" id="phone" placeholder="Teléfono"
-                            style="flex: 1; min-width: 200px;">
+                        <div class="contact-inputs" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                            <input type="email" name="email" id="email" placeholder="Email (Opcional)"
+                                style="flex: 1; min-width: 200px;">
+                            <input type="tel" name="phone" id="phone" placeholder="Teléfono"
+                                style="flex: 1; min-width: 200px;">
+                        </div>
+                        <small
+                            style="color: #666; font-size: 0.8rem; display: block; margin-top: 0.5rem; margin-bottom: 1rem;">*
+                            Indica al menos un email o teléfono</small>
                     </div>
-                    <small style="color: #666; font-size: 0.8rem; margin-top: -1rem; margin-bottom: 1rem;">* Indica al
-                        menos un email o teléfono</small>
-                    <select name="guests">
-                        <option value="1">1 Persona</option>
-                        <option value="2">2 Personas</option>
-                    </select>
+
+                    <div style="margin-bottom: 1rem; text-align: left;">
+                        <label
+                            style="display: block; margin-bottom: 0.5rem; font-weight: bold; color: var(--color-text);">¿Cuántas
+                            personas asistirán (incluyéndote)?</label>
+                        <select id="guest-count" name="guest_count" onchange="generateGuestFields()"
+                            style="margin-bottom: 1rem; width: 100%;">
+                            <option value="1" selected>1 Persona</option>
+                            <option value="2">2 Personas</option>
+                            <option value="3">3 Personas</option>
+                            <option value="4">4 Personas</option>
+                            <option value="5">5 Personas</option>
+                        </select>
+                    </div>
+
+                    <div id="guests-container">
+                        <!-- Dynamic fields will be inserted here -->
+                    </div>
                     <div class="checkbox-wrapper">
                         <input type="checkbox" id="bus" name="bus" onchange="toggleBusOptions(this)">
-                        <label for="bus">¿Necesitaremos servicio de autobús?</label>
+                        <label for="bus">¿Necesitas servicio de autobús?</label>
                     </div>
                     <div id="bus-options" class="bus-options" style="display: none;">
                         <p class="bus-label">Horario de vuelta preferido:</p>
